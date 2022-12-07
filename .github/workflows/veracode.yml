@@ -45,7 +45,7 @@ jobs:
         uses: veracode/veracode-uploadandscan-action@master
         id: upload_and_scan
         with:
-          appname: 'Verademo'
+          appname: 'Verademo2'
           version: '${{ github.run_id }}'
           filepath: 'verademo.war'
           vid: '${{ secrets.VERACODE_API_ID }}'
@@ -66,7 +66,7 @@ jobs:
         VERACODE_API_KEY_SECRET: '${{ secrets.VERACODE_API_KEY }}'
       id: import_flaws
       with:
-        app_name: 'Verademo'
+        app_name: 'Verademo2'
 
     - uses: actions/upload-artifact@master
       with:
@@ -88,7 +88,7 @@ jobs:
           cd /tmp
           export VERACODE_API_KEY_ID=${{ secrets.VERACODE_API_ID }}
           export VERACODE_API_KEY_SECRET=${{ secrets.VERACODE_API_KEY }}
-          guid=$(http --auth-type veracode_hmac GET "https://api.veracode.com/appsec/v1/applications?name=Verademo" | jq -r '._embedded.applications[0].guid') 
+          guid=$(http --auth-type veracode_hmac GET "https://api.veracode.com/appsec/v1/applications?name=Verademo2" | jq -r '._embedded.applications[0].guid') 
           echo GUID: ${guid}
           total_flaws=$(http --auth-type veracode_hmac GET "https://api.veracode.com/appsec/v2/applications/${guid}/findings?scan_type=STATIC&violates_policy=True" | jq -r '.page.total_elements')
           echo TOTAL_FLAWS: ${total_flaws}
@@ -117,16 +117,6 @@ jobs:
           scan-results-json: 'policy_flaws.json'
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
-  # Run a Software Composition Analysis scan
-  software-composition-analysis:
-    runs-on: ubuntu-latest
-    steps:
-    - run: curl -sSL https://download.sourceclear.com/ci.sh | bash -s scan . --update-advisor 2>&1 | tee sca_output.txt
-      env:
-        SRCCLR_API_TOKEN: ${{secrets.SRCCLR_API_TOKEN}}
-    - uses: actions/upload-artifact@v1
-      with:
-        name: SCAScanResults
-        path: sca_output.txt
+ 
 
 
